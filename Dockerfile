@@ -11,13 +11,14 @@ RUN apt-get install -y curl vim sudo wget rsync
 RUN apt-get install -y apache2
 RUN apt-get install -y python
 RUN apt-get install -y supervisor
+RUN apt-get install -y libapache2-mod-fastcgi
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # Fetch  brat
 RUN mkdir /var/www/brat
-RUN curl http://weaver.nlplab.org/~brat/releases/brat-v1.3_Crunchy_Frog.tar.gz > /var/www/brat/brat-v1.3_Crunchy_Frog.tar.gz 
+RUN curl http://weaver.nlplab.org/~brat/releases/brat-v1.3_Crunchy_Frog.tar.gz > /var/www/brat/brat-v1.3_Crunchy_Frog.tar.gz
 RUN cd /var/www/brat && tar -xvzf brat-v1.3_Crunchy_Frog.tar.gz
+RUN cd /var/www/brat/brat-v1.3_Crunchy_Frog/server/lib/ && tar xfz flup-1.0.2.tar.gz
 
 # create a symlink so users can mount their data volume at /bratdata rather than the full path
 RUN mkdir /bratdata && mkdir /bratcfg
@@ -37,12 +38,14 @@ RUN chmod +x /usr/bin/brat_install_wrapper.sh
 RUN chown -R www-data:www-data /var/www/brat/brat-v1.3_Crunchy_Frog/
 
 ADD 000-default.conf /etc/apache2/sites-available/000-default.conf
-
+ADD .htaccess /var/www/brat/brat-v1.3_Crunchy_Frog/.htaccess
 # add the user patching script
 ADD user_patch.py /var/www/brat/brat-v1.3_Crunchy_Frog/user_patch.py
 
 # Enable cgi
-RUN a2enmod cgi
+RUN a2enmod userdir
+RUN a2enmod fastcgi
+RUN a2enmod rewrite
 
 EXPOSE 80
 

@@ -7,7 +7,8 @@ $BRAT_EMAIL
 EOD
 
 chown -R www-data:www-data /bratdata
-
+chgrp -R www-data var/www/brat/brat-v1.3_Crunchy_Frog/data var/www/brat/brat-v1.3_Crunchy_Frog/work
+chmod -R g+rwx var/www/brat/brat-v1.3_Crunchy_Frog/data var/www/brat/brat-v1.3_Crunchy_Frog/work
 # patch the user config with more users
 python /var/www/brat/brat-v1.3_Crunchy_Frog/user_patch.py
 
